@@ -13,17 +13,21 @@ void main() {
   float d = length(uv);
   if (d > 0.5) discard;
 
-  float core = smoothstep(0.5, 0.0, d);
-  float halo = smoothstep(0.5, 0.15, d) * 0.4;
+  // Tight falloff — mostly transparent halo, small bright core
+  float core = smoothstep(0.15, 0.0, d);
+  float halo = smoothstep(0.5, 0.35, d) * 0.12;
   float intensity = core + halo;
 
-  float twinkle = 0.7 + 0.3 * sin(uTime * 2.4 + vSeed * 12.566);
+  // subtle twinkle, never blows out
+  float twinkle = 0.85 + 0.15 * sin(uTime * 2.2 + vSeed * 12.566);
 
-  float converge = mix(0.85, 1.0, uProgress);
+  // converge brightens slightly
+  float converge = mix(0.7, 1.0, uProgress);
 
-  vec3 col = vec3(1.0) * intensity * twinkle * converge;
+  vec3 col = vec3(intensity * twinkle * converge);
 
-  gl_FragColor = vec4(col, intensity * vAlpha);
+  // alpha = intensity only — additive blending will handle brightness
+  gl_FragColor = vec4(col, intensity * vAlpha * 0.9);
 }
 `;
 

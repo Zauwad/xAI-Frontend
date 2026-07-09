@@ -16,8 +16,8 @@ export function generatePoints(count: number, seed = 1337) {
   const rng = mulberry32(seed);
   const arr = new Float32Array(count * 3);
   for (let i = 0; i < count; i++) {
-    // Spherical distribution
-    const r = Math.cbrt(rng()) * 1.6;
+    // Spherical distribution — wider spread so cloud feels volumetric, not clustered
+    const r = Math.cbrt(rng()) * 2.4;
     const theta = rng() * Math.PI * 2;
     const phi = Math.acos(2 * rng() - 1);
     arr[i * 3 + 0] = r * Math.sin(phi) * Math.cos(theta);

@@ -87,7 +87,7 @@ function Particles({
         uniforms={uniforms}
         transparent
         depthWrite={false}
-        blending={THREE.AdditiveBlending}
+        blending={THREE.NormalBlending}
       />
     </points>
   );
@@ -147,7 +147,7 @@ function Rig() {
   const { camera } = useThree();
   useFrame((state) => {
     const t = state.clock.elapsedTime;
-    camera.position.z = 4.2 + Math.sin(t * 0.15) * 0.05;
+    camera.position.z = 6.5 + Math.sin(t * 0.15) * 0.05;
     camera.lookAt(0, 0, 0);
   });
   return null;
@@ -169,7 +169,7 @@ export function ParticleField() {
     return () => window.removeEventListener('pointermove', onMove);
   }, []);
 
-  const count = reduced ? 600 : 1500;
+  const count = reduced ? 500 : 1000;
 
   return (
     <Canvas
@@ -179,7 +179,7 @@ export function ParticleField() {
         powerPreference: 'high-performance',
       }}
       dpr={[1, 1.5]}
-      camera={{ position: [0, 0, 4.2], fov: 45 }}
+      camera={{ position: [0, 0, 6.5], fov: 45 }}
       style={{ background: 'transparent', pointerEvents: 'none' }}
     >
       <Rig />

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Container } from '@/components/primitives/Container';
 import { Reveal } from '@/components/primitives/Reveal';
@@ -20,6 +20,30 @@ const TABS = [
 
 export function DashboardPreview() {
   const [tab, setTab] = useState('live');
+  const [autoCycle, setAutoCycle] = useState(false);
+
+  useEffect(() => {
+    const onCycle = () => setAutoCycle(true);
+    const onStop = () => setAutoCycle(false);
+    window.addEventListener('xai:demo-cycle', onCycle);
+    window.addEventListener('xai:demo-stop', onStop);
+    return () => {
+      window.removeEventListener('xai:demo-cycle', onCycle);
+      window.removeEventListener('xai:demo-stop', onStop);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!autoCycle) return;
+    const order = ['live', 'insights', 'automations'];
+    let i = 0;
+    setTab(order[i]);
+    const id = setInterval(() => {
+      i = (i + 1) % order.length;
+      setTab(order[i]);
+    }, 4500);
+    return () => clearInterval(id);
+  }, [autoCycle]);
 
   return (
     <section
@@ -83,6 +107,19 @@ export function DashboardPreview() {
                   </button>
                 ))}
                 <div className="ml-auto flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-fg-dim">
+                  {autoCycle && (
+                    <motion.span
+                      initial={{ opacity: 0, x: 4 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="flex items-center gap-2 rounded-sm border border-border-hi bg-bg-elev2 px-2 py-0.5 text-fg"
+                    >
+                      <span className="relative grid h-1.5 w-1.5 place-items-center">
+                        <span className="absolute h-1.5 w-1.5 animate-ping rounded-full bg-fg/60" />
+                        <span className="relative h-1.5 w-1.5 rounded-full bg-fg" />
+                      </span>
+                      auto
+                    </motion.span>
+                  )}
                   <span>last sync</span>
                   <span className="text-fg-muted">2m ago</span>
                 </div>

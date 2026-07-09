@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
 import './globals.css';
+import { CommandPalette } from '@/components/palette/CommandPalette';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://xai.work'),
@@ -31,7 +32,10 @@ export default function RootLayout({
       lang="en"
       className={`${GeistSans.variable} ${GeistMono.variable} dark`}
     >
-      <body className="grain bg-bg-base text-fg antialiased">{children}</body>
+      <body className="grain bg-bg-base text-fg antialiased">
+        {children}
+        <CommandPalette />
+      </body>
     </html>
   );
 }

@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { MagneticButton } from '@/components/primitives/MagneticButton';
+import { PaletteTrigger } from '@/components/palette/CommandPalette';
 
 const NAV = [
   { href: '#flow', label: 'Process' },
@@ -51,21 +53,24 @@ export function TopNav() {
               {n.label}
             </a>
           ))}
+          <div className="ml-2 pl-2 border-l border-border">
+            <PaletteTrigger />
+          </div>
         </nav>
 
         <div className="flex items-center gap-2">
           <span className="hidden font-mono text-xs uppercase tracking-[0.18em] text-fg-dim md:inline">
             v0.1
           </span>
-          <a
+          <MagneticButton
             href="#signature"
-            className="group relative overflow-hidden rounded-sm border border-border-hi bg-bg-elev1 px-3 py-1.5 font-mono text-xs uppercase tracking-[0.18em] text-fg transition-colors duration-300 hover:border-fg hover:text-bg-base"
+            className="group relative overflow-hidden rounded-sm border border-border-hi bg-bg-elev1 px-3 py-1.5 font-mono text-xs uppercase tracking-[0.18em] text-fg transition-colors duration-300 hover:border-fg"
           >
             <span className="relative z-10 transition-colors duration-300 group-hover:text-bg-base">
               Launch
             </span>
             <span className="absolute inset-0 -z-0 translate-y-full bg-fg transition-transform duration-500 ease-out-quart group-hover:translate-y-0" />
-          </a>
+          </MagneticButton>
         </div>
       </div>
     </motion.header>

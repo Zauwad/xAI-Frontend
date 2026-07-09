@@ -42,14 +42,14 @@ void main() {
 
   vec3 morphed = mix(home, target, e);
 
-  float drift = (1.0 - e) * 0.08;
+  float drift = (1.0 - e) * 0.06;
   morphed += vec3(
     sin(uTime * 0.6 + aSeed * 6.28),
     cos(uTime * 0.5 + aSeed * 4.71),
     sin(uTime * 0.7 + aSeed * 3.14)
   ) * drift;
 
-  float wobble = e * 0.04;
+  float wobble = e * 0.03;
   morphed += vec3(
     sin(uTime * 1.2 + aSeed * 9.0),
     cos(uTime * 1.0 + aSeed * 7.0),
@@ -62,10 +62,11 @@ void main() {
   vec4 mv = modelViewMatrix * vec4(morphed, 1.0);
   gl_Position = projectionMatrix * mv;
 
-  float size = mix(2.6, 3.4, e);
-  gl_PointSize = size * (320.0 / -mv.z);
+  // Small points — half previous size. Converged points barely grow.
+  float size = mix(1.6, 2.2, e);
+  gl_PointSize = size * (60.0 / -mv.z);
 
-  vAlpha = mix(0.85, 1.0, e);
+  vAlpha = mix(0.7, 1.0, e);
   vSeed = aSeed;
 }
 `;

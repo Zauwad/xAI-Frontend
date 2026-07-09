@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Container } from '@/components/primitives/Container';
 import { Reveal } from '@/components/primitives/Reveal';
+import { MagneticButton } from '@/components/primitives/MagneticButton';
 import { ParallaxLayers } from './ParallaxLayers';
 
 const BOOT_LOG = [
@@ -85,9 +86,17 @@ export function SignatureSection() {
           transition={{ duration: 1.4 }}
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
-          className="relative aspect-square w-full max-w-[640px]"
+          className="group relative aspect-square w-full max-w-[640px]"
         >
           <ReactiveObject />
+          {/* press-X hint */}
+          <div className="pointer-events-none absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-fg-dim opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+            <span>press</span>
+            <kbd className="rounded-sm border border-border-hi bg-bg-elev2 px-1.5 py-0.5 text-fg-muted">
+              X
+            </kbd>
+            <span>to explode</span>
+          </div>
         </motion.div>
 
         <Reveal delay={0.1}>
@@ -104,13 +113,15 @@ export function SignatureSection() {
         </Reveal>
 
         <Reveal delay={0.3}>
-          <a
+          <MagneticButton
             href="#top"
-            className="group relative overflow-hidden rounded-sm border border-fg px-6 py-3 font-mono text-xs uppercase tracking-[0.22em] text-fg transition-colors duration-500 hover:text-bg-base"
+            className="group relative overflow-hidden rounded-sm border border-fg px-6 py-3 font-mono text-xs uppercase tracking-[0.22em] text-fg"
           >
-            <span className="relative z-10">Begin →</span>
+            <span className="relative z-10 transition-colors duration-500 group-hover:text-bg-base">
+              Begin →
+            </span>
             <span className="absolute inset-0 translate-y-full bg-fg transition-transform duration-500 ease-out-quart group-hover:translate-y-0" />
-          </a>
+          </MagneticButton>
         </Reveal>
       </Container>
 
