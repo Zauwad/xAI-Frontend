@@ -23,10 +23,34 @@ const CATEGORIES: { name: string; count: number }[] = [
   { name: 'signals', count: 406_898 },
 ];
 
-// Timing — labels fade in immediately after the 3s morph completes
-const LABEL_START_BASE = 3.1; // seconds, right after morph ends
-const LABEL_STAGGER = 0.12; // seconds between consecutive labels
-const LABEL_FADE_DURATION = 0.5; // seconds
+// Timing — labels fade across the last 2s of the 6s morph, staggered per node.
+const LABEL_START = 4.0;
+const LABEL_END = 6.0;
+const LABEL_FADE_DURATION = 0.5;
+
+// Explicit per-node label placement to prevent overlap.
+// pos: HTML offset relative to attractor anchor.
+// align: 'left' (text reads left of anchor) | 'right' (reads right).
+type Anchor = {
+  pos: [number, number, number];
+  align: 'left' | 'right';
+};
+
+// Index → explicit anchor. Picked by hand to splay labels away from each other.
+const ANCHORS: Anchor[] = [
+  { pos: [-0.18,  0.05, 0], align: 'right' }, // 0  orders
+  { pos: [ 0.18,  0.00, 0], align: 'left'  }, // 1  users
+  { pos: [-0.18, -0.05, 0], align: 'right' }, // 2  events
+  { pos: [ 0.18, -0.05, 0], align: 'left'  }, // 3  revenue
+  { pos: [ 0.18,  0.05, 0], align: 'left'  }, // 4  sessions
+  { pos: [-0.18,  0.10, 0], align: 'right' }, // 5  support
+  { pos: [-0.18, -0.05, 0], align: 'right' }, // 6  products
+  { pos: [ 0.18,  0.10, 0], align: 'left'  }, // 7  campaigns
+  { pos: [ 0.18, -0.05, 0], align: 'left'  }, // 8  regions
+  { pos: [ 0.18,  0.05, 0], align: 'left'  }, // 9  partners
+  { pos: [-0.18, -0.05, 0], align: 'right' }, // 10 segments
+  { pos: [-0.18,  0.05, 0], align: 'right' }, // 11 signals
+];
 
 function CategoryNode({
   position,
@@ -42,16 +66,16 @@ function CategoryNode({
   const groupRef = useRef<THREE.Group>(null);
   const ringRef = useRef<THREE.Mesh>(null);
   const [labelVisible, setLabelVisible] = useState(false);
+  const anchor = ANCHORS[index];
 
   useFrame((state) => {
     if (!groupRef.current) return;
     const t = state.clock.elapsedTime;
 
-    // Labels start AFTER the morph completes
-    const labelStart = LABEL_START_BASE + index * LABEL_STAGGER;
-    const sinceLabel = t - labelStart;
+    // Spread fade across LABEL_START..LABEL_END so labels "light up" over 2s
+    const stagger = (LABEL_END - LABEL_START) * (index / 11);
+    const sinceLabel = t - (LABEL_START + stagger);
 
-    // Trigger label fade-in
     if (visible && sinceLabel >= 0 && !labelVisible) {
       setLabelVisible(true);
     }
@@ -59,7 +83,6 @@ function CategoryNode({
       setLabelVisible(false);
     }
 
-    // Ring appears with label
     if (ringRef.current) {
       const mat = ringRef.current.material as THREE.MeshBasicMaterial;
       mat.opacity = labelVisible ? 0.5 : 0;
@@ -69,6 +92,7 @@ function CategoryNode({
 
   const cat = CATEGORIES[index];
   const pct = ((cat.count / totalCount) * 100).toFixed(1);
+  const alignment = anchor.align === 'right' ? 'text-right pr-2' : 'pl-2';
 
   return (
     <group ref={groupRef} position={position}>
@@ -88,9 +112,9 @@ function CategoryNode({
         <meshBasicMaterial color="#fafafa" />
       </mesh>
 
-      {/* HTML label — fade in only after morph + stagger */}
+      {/* HTML label — explicit per-node anchor to prevent overlap */}
       <Html
-        position={[0.18, 0, 0]}
+        position={anchor.pos}
         style={{ pointerEvents: 'none', userSelect: 'none' }}
         distanceFactor={6}
       >
@@ -98,7 +122,7 @@ function CategoryNode({
           initial={{ opacity: 0 }}
           animate={{ opacity: labelVisible ? 1 : 0 }}
           transition={{ duration: LABEL_FADE_DURATION, ease: 'easeOut' }}
-          className="translate-y-[-50%] whitespace-nowrap pl-2"
+          className={`whitespace-nowrap -translate-y-1/2 ${alignment}`}
         >
           <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-fg-muted">
             {cat.name}

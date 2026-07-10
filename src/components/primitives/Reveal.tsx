@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, useInView, Variants } from 'framer-motion';
-import { ReactNode, useRef } from 'react';
+import { createElement, ReactNode, useRef } from 'react';
 
 const variants: Variants = {
   hidden: { opacity: 0, y: 24 },
@@ -12,6 +12,15 @@ const variants: Variants = {
   },
 };
 
+const TAGS = {
+  div: 'div',
+  span: 'span',
+  p: 'p',
+  h2: 'h2',
+  h3: 'h3',
+  section: 'section',
+} as const;
+
 export function Reveal({
   children,
   delay = 0,
@@ -21,91 +30,19 @@ export function Reveal({
   children: ReactNode;
   delay?: number;
   className?: string;
-  as?: 'div' | 'span' | 'p' | 'h2' | 'h3' | 'section';
+  as?: keyof typeof TAGS;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, margin: '-10% 0px -10% 0px' });
-
-  if (as === 'span') {
-    return (
-      <motion.span
-        ref={ref}
-        className={className}
-        variants={variants}
-        initial="hidden"
-        animate={inView ? 'show' : 'hidden'}
-        transition={{ delay }}
-      >
-        {children}
-      </motion.span>
-    );
-  }
-  if (as === 'p') {
-    return (
-      <motion.p
-        ref={ref}
-        className={className}
-        variants={variants}
-        initial="hidden"
-        animate={inView ? 'show' : 'hidden'}
-        transition={{ delay }}
-      >
-        {children}
-      </motion.p>
-    );
-  }
-  if (as === 'h2') {
-    return (
-      <motion.h2
-        ref={ref}
-        className={className}
-        variants={variants}
-        initial="hidden"
-        animate={inView ? 'show' : 'hidden'}
-        transition={{ delay }}
-      >
-        {children}
-      </motion.h2>
-    );
-  }
-  if (as === 'h3') {
-    return (
-      <motion.h3
-        ref={ref}
-        className={className}
-        variants={variants}
-        initial="hidden"
-        animate={inView ? 'show' : 'hidden'}
-        transition={{ delay }}
-      >
-        {children}
-      </motion.h3>
-    );
-  }
-  if (as === 'section') {
-    return (
-      <motion.section
-        ref={ref}
-        className={className}
-        variants={variants}
-        initial="hidden"
-        animate={inView ? 'show' : 'hidden'}
-        transition={{ delay }}
-      >
-        {children}
-      </motion.section>
-    );
-  }
-  return (
-    <motion.div
-      ref={ref}
-      className={className}
-      variants={variants}
-      initial="hidden"
-      animate={inView ? 'show' : 'hidden'}
-      transition={{ delay }}
-    >
-      {children}
-    </motion.div>
-  );
+  const props = {
+    ref: ref as React.Ref<any>,
+    className,
+    variants,
+    initial: 'hidden',
+    animate: inView ? 'show' : 'hidden',
+    transition: { delay },
+    children,
+  };
+  // ponytail: motion() factory replaces 6-branch if/else ladder; same DOM, half the lines.
+  return createElement(motion[TAGS[as]] as any, props);
 }

@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { MagneticButton } from '@/components/primitives/MagneticButton';
+import { PrimaryCTA } from '@/components/primitives/PrimaryCTA';
+import { BrandMark } from '@/components/primitives/BrandMark';
 import { PaletteTrigger } from '@/components/palette/CommandPalette';
 
 const NAV = [
@@ -32,16 +33,7 @@ export function TopNav() {
       }`}
     >
       <div className="mx-auto flex h-14 max-w-[1440px] items-center justify-between px-6 md:px-10">
-        <a
-          href="#top"
-          className="flex items-center gap-2 font-mono text-sm tracking-tight"
-        >
-          <span className="grid h-6 w-6 place-items-center rounded-sm border border-border-hi bg-bg-elev1 text-[10px]">
-            ✕
-          </span>
-          <span className="text-fg">xai</span>
-          <span className="text-fg-dim">/workspace</span>
-        </a>
+        <BrandMark />
 
         <nav className="hidden items-center gap-1 md:flex">
           {NAV.map((n) => (
@@ -62,15 +54,14 @@ export function TopNav() {
           <span className="hidden font-mono text-xs uppercase tracking-[0.18em] text-fg-dim md:inline">
             v0.1
           </span>
-          <MagneticButton
+          <PrimaryCTA
             href="#signature"
-            className="group relative overflow-hidden rounded-sm border border-border-hi bg-bg-elev1 px-3 py-1.5 font-mono text-xs uppercase tracking-[0.18em] text-fg transition-colors duration-300 hover:border-fg"
+            variant="outline"
+            size="sm"
+            className="border-border-hi bg-bg-elev1 transition-colors duration-300 hover:border-fg"
           >
-            <span className="relative z-10 transition-colors duration-300 group-hover:text-bg-base">
-              Launch
-            </span>
-            <span className="absolute inset-0 -z-0 translate-y-full bg-fg transition-transform duration-500 ease-out-quart group-hover:translate-y-0" />
-          </MagneticButton>
+            Launch
+          </PrimaryCTA>
         </div>
       </div>
     </motion.header>

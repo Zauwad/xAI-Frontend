@@ -16,8 +16,6 @@ function Particles({
   count: number;
   progressRef: React.MutableRefObject<number>;
 }) {
-  const matRef = useRef<THREE.ShaderMaterial>(null!);
-
   const { positions, attractors, seeds } = useMemo(() => {
     const positions = generatePoints(count);
     const attractors = new Float32Array(count);
@@ -57,9 +55,9 @@ function Particles({
   useFrame((state) => {
     uniforms.uTime.value = state.clock.elapsedTime;
     const target = progressRef.current;
-    // Slow lerp — slider crawls 0→1 over ~3s so user feel data getting organized
-    // (0.011 ≈ reaches ~0.95 at t=3s, full settle ~3.4s)
-    uniforms.uProgress.value += (target - uniforms.uProgress.value) * 0.011;
+    // Slow lerp — slider crawls 0→1 over ~6s so user feel data getting organized
+    // (0.0055 ≈ reaches ~0.95 at t=6s, full settle ~6.5s)
+    uniforms.uProgress.value += (target - uniforms.uProgress.value) * 0.0055;
   });
 
   return (
@@ -76,13 +74,11 @@ function Particles({
         <bufferAttribute attach="attributes-aSeed" args={[seeds, 1]} />
       </bufferGeometry>
       <shaderMaterial
-        ref={matRef}
         vertexShader={vert}
         fragmentShader={frag}
         uniforms={uniforms}
         transparent
         depthWrite={false}
-        blending={THREE.NormalBlending}
       />
     </points>
   );
@@ -138,12 +134,6 @@ function AttractorLines({
   );
 }
 
-function Rig() {
-  // Camera locked at fixed position so category labels stay anchored to their attractors.
-  // (Earlier breathing made screen-space labels drift relative to particles.)
-  return null;
-}
-
 export function ParticleField({
   triggered = false,
 }: {
@@ -167,7 +157,6 @@ export function ParticleField({
       camera={{ position: [0, 0, 6.5], fov: 45 }}
       style={{ background: 'transparent', pointerEvents: 'none' }}
     >
-      <Rig />
       <Particles count={count} progressRef={progressRef} />
       <AttractorLines progressRef={progressRef} />
       <CategoryOverlay visible={triggered} />

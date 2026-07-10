@@ -117,6 +117,47 @@ src/
 - **Radii**: `rounded-sm` (2px) for chips/buttons, `rounded-md` (6px) for the dashboard frame.
 - **Easing**: `cubic-bezier(0.22, 1, 0.36, 1)` (out-quart) as the single global default.
 
+## Product UI plan
+
+End-to-end overview of what the user sees and how the experience is structured. Detailed frame specs (dimensions, annotations, sharing settings) live in `FIGMA_PLAN.md`.
+
+### User journey
+
+A single-page scroll with four acts, each one a distinct rhythm:
+
+1. **Hero — arrival.** The visitor lands on a near-black canvas. An eyebrow reads `INTELLIGENCE WORKSPACE`. A two-line headline states the product promise (`From raw data / to decisions.`, second line dimmed). Behind it, a 1,500-point particle field holds visual interest without competing with the copy. As they scroll, the field collapses into a constellation — the first signal that Xai organizes chaos into structure.
+2. **Insight Flow — explanation.** The page pins. Three cards (`Ingest` → `Analyze` → `Surface`) explain the product's value proposition in plain language. An SVG line draws between them as the visitor scrolls, so progression is *felt*, not just read. Each card carries its own micro-visual to anchor the metaphor.
+3. **Dashboard Preview — demonstration.** The product surface itself. Realistic chrome — sidebar, top bar, breadcrumbs, ⌘K, tabs — and real-feeling data: KPI cards with animated count-ups, a data table, an activity feed. The visitor should believe this thing could run a workflow.
+4. **Signature — payoff.** A cursor-reactive icosahedron over four depth layers. The point is craft, not feature: the visitor should feel the difference between this and a template.
+
+### Surface inventory
+
+| Surface | Purpose | Key elements |
+|---|---|---|
+| Hero | First impression, product promise | Particle field, eyebrow, headline, sub, floating stats column, marquee strip |
+| Insight Flow | Explain value in 3 steps | Pinned stage, 3 step cards with micro-visuals, drawn connector line |
+| Dashboard | Demonstrate the actual product | Sidebar, top bar with search + user, KPI grid, data table, activity feed, 3 tabs |
+| Signature | Showcase craft + close | Cursor-reactive icosahedron, 4 parallax layers, CTA, telemetry strip |
+| Footer | Sign-off, links | Final mark, secondary nav |
+
+### Design principles (UI-level)
+
+- **One accent.** White on near-black. Restraint is the brand.
+- **Honest motion.** Animation is tied to scroll, pointer, or real render metrics. No decorative looping.
+- **No chart libraries, no UI kits.** Every pixel reasoned about.
+- **Composed, not duplicated.** KPI cards, table rows, activity items all share primitives.
+- **Deterministic first paint.** Seeded RNG, static mock data, no hydration flicker.
+- **Reduced-motion parity.** Every animated surface has a still or simplified fallback.
+- **Keyboard + screen-reader reachable.** Visible focus rings, semantic HTML, `prefers-reduced-motion` honored.
+
+### Deliverables
+
+- **Live prototype** — this Next.js app (Vercel-ready).
+- **Figma file** — design tokens, components, and annotated frames per `FIGMA_PLAN.md`.
+- **Walkthrough** — Loom script in `LOOM_SCRIPT.md`, ~2:30 with b-roll.
+
+---
+
 ## Production build
 
 ```bash

@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Container } from '@/components/primitives/Container';
+import { StatusPulse } from '@/components/primitives/StatusPulse';
 
 const SOURCES = [
   'orders.csv',
@@ -22,17 +23,7 @@ export function LineageStrip() {
   return (
     <Container size="wide">
       <div className="flex flex-col gap-5 md:flex-row md:items-center md:gap-8">
-        <div className="flex shrink-0 items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-fg-dim">
-          <span className="relative grid h-1.5 w-1.5 place-items-center">
-            <span className="absolute h-1.5 w-1.5 rounded-full bg-fg" />
-            <motion.span
-              className="absolute h-1.5 w-1.5 rounded-full bg-fg/60"
-              animate={{ scale: [1, 2.6, 1], opacity: [0.6, 0, 0.6] }}
-              transition={{ duration: 1.8, repeat: Infinity, ease: 'easeOut' }}
-            />
-          </span>
-          <span>sourced from</span>
-        </div>
+        <StatusPulse label="sourced from" className="shrink-0 text-fg-dim" />
         <div className="flex flex-1 flex-wrap items-center gap-2">
           {SOURCES.map((s, i) => (
             <motion.span

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Container } from '@/components/primitives/Container';
-import { Reveal } from '@/components/primitives/Reveal';
+import { SectionHeading } from '@/components/primitives/SectionHeading';
 import { LineageStrip } from './LineageStrip';
 
 const SAMPLE_QUESTIONS = [
@@ -66,8 +66,6 @@ const ANSWERS: Record<string, Answer> = {
   },
 };
 
-const DEFAULT_ANSWER: Answer = ANSWERS[SAMPLE_QUESTIONS[0]];
-
 export function AskXai() {
   const [active, setActive] = useState(SAMPLE_QUESTIONS[0]);
   const [typed, setTyped] = useState('');
@@ -77,7 +75,7 @@ export function AskXai() {
   const [hasTriggered, setHasTriggered] = useState(false);
   const typingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const answer = ANSWERS[active] ?? DEFAULT_ANSWER;
+  const answer = ANSWERS[active];
 
   // Trigger typing when section enters viewport (once)
   useEffect(() => {
@@ -141,20 +139,13 @@ export function AskXai() {
     >
       <div className="grid-bg pointer-events-none absolute inset-0 opacity-30" />
       <Container size="wide" className="relative">
-        <div className="mb-16 flex flex-col gap-6 md:mb-20">
-          <Reveal delay={0.1}>
-            <h2 className="max-w-[820px] text-balance text-4xl font-medium leading-[1.05] tracking-[-0.03em] md:text-6xl">
-              Ask anything.
-              <br />
-              <span className="text-fg-muted">Xai reasons over your data.</span>
-            </h2>
-          </Reveal>
-          <Reveal delay={0.2}>
-            <p className="max-w-[560px] text-base leading-relaxed text-fg-muted">
-              Plain English. Every answer cites its sources. Every query stays
-              in your workspace.
-            </p>
-          </Reveal>
+        <div className="mb-16 md:mb-20">
+          <SectionHeading
+            title="Ask anything."
+            muted="Xai reasons over your data."
+            body="Plain English. Every answer cites its sources. Every query stays in your workspace."
+            maxWidth="820px"
+          />
         </div>
 
         {/* The query surface */}

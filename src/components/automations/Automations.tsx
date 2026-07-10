@@ -3,6 +3,9 @@
 import { motion } from 'framer-motion';
 import { Container } from '@/components/primitives/Container';
 import { Reveal } from '@/components/primitives/Reveal';
+import { SectionHeading } from '@/components/primitives/SectionHeading';
+import { StatusPulse } from '@/components/primitives/StatusPulse';
+import { Sparkline } from '@/components/dashboard/Sparkline';
 
 type Auto = {
   idx: string;
@@ -68,67 +71,11 @@ const AUTOMATIONS: Auto[] = [
   },
 ];
 
-function StatusDot({ status }: { status: Auto['status'] }) {
-  const color =
-    status === 'running'
-      ? 'bg-fg'
-      : status === 'error'
-      ? 'bg-fg'
-      : 'bg-fg-muted';
-  const ring = status === 'error' ? 'bg-[#FAFAFA]' : 'bg-fg';
-  const animate =
-    status === 'running'
-      ? { scale: [1, 2.6, 1], opacity: [0.6, 0, 0.6] }
-      : status === 'error'
-      ? { scale: [1, 1.8, 1], opacity: [0.8, 0.2, 0.8] }
-      : { opacity: 0 };
-  return (
-    <span className="relative grid h-1.5 w-1.5 place-items-center">
-      <span className={`absolute h-1.5 w-1.5 rounded-full ${color}`} />
-      <motion.span
-        className={`absolute h-1.5 w-1.5 rounded-full ${ring}`}
-        animate={animate}
-        transition={{ duration: 1.8, repeat: Infinity, ease: 'easeOut' }}
-      />
-    </span>
-  );
-}
-
-function Spark({ data, status }: { data: number[]; status: Auto['status'] }) {
-  const w = 100;
-  const h = 24;
-  const max = Math.max(...data, 100);
-  const stepX = w / (data.length - 1);
-  const path = data
-    .map((v, i) => {
-      const x = i * stepX;
-      const y = h - (v / max) * (h - 2) - 1;
-      return `${i === 0 ? 'M' : 'L'} ${x.toFixed(2)} ${y.toFixed(2)}`;
-    })
-    .join(' ');
-  const opacity =
-    status === 'error' ? 0.7 : status === 'idle' ? 0.4 : 0.9;
-  return (
-    <svg
-      viewBox={`0 0 ${w} ${h}`}
-      className="h-6 w-full"
-      preserveAspectRatio="none"
-    >
-      <motion.path
-        d={path}
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="0.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        initial={{ pathLength: 0, opacity: 0 }}
-        whileInView={{ pathLength: 1, opacity }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.4, ease: 'easeOut' }}
-      />
-    </svg>
-  );
-}
+const STATUS_LABEL: Record<Auto['status'], string> = {
+  running: 'running',
+  idle: 'idle',
+  error: 'attention',
+};
 
 export function Automations() {
   return (
@@ -138,19 +85,10 @@ export function Automations() {
     >
       <Container size="wide">
         <div className="mb-16 flex flex-col items-start justify-between gap-6 md:mb-20 md:flex-row md:items-end">
-          <div className="flex flex-col gap-6">
-            <Reveal delay={0.1}>
-              <h2 className="max-w-[720px] text-balance text-4xl font-medium leading-[1.05] tracking-[-0.03em] md:text-6xl">
-                Work that runs itself.
-              </h2>
-            </Reveal>
-            <Reveal delay={0.2}>
-              <p className="max-w-[520px] text-base leading-relaxed text-fg-muted">
-                Schedules, alerts, and triggers. Xai watches your data and ships
-                the answer before you ask.
-              </p>
-            </Reveal>
-          </div>
+          <SectionHeading
+            title="Work that runs itself."
+            body="Schedules, alerts, and triggers. Xai watches your data and ships the answer before you ask."
+          />
           <Reveal delay={0.3}>
             <div className="font-mono text-[11px] uppercase tracking-[0.22em] text-fg-dim">
               4 active · 227 runs · 30d
@@ -175,15 +113,13 @@ export function Automations() {
               {/* header row */}
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3">
-                  <StatusDot status={a.status} />
+                  <StatusPulse
+                    size="sm"
+                    className="mt-1.5 text-fg-dim"
+                  />
                   <div>
                     <div className="font-mono text-[11px] uppercase tracking-[0.22em] text-fg-dim">
-                      {a.idx} ·{' '}
-                      {a.status === 'running'
-                        ? 'running'
-                        : a.status === 'error'
-                        ? 'attention'
-                        : 'idle'}
+                      {a.idx} · {STATUS_LABEL[a.status]}
                     </div>
                     <h3 className="mt-1.5 text-xl font-medium tracking-tight md:text-2xl">
                       {a.name}
@@ -220,8 +156,16 @@ export function Automations() {
 
               {/* sparkline + stats */}
               <div className="flex items-end justify-between gap-4">
-                <div className="flex-1 text-fg-muted">
-                  <Spark data={a.sparkline} status={a.status} />
+                <div
+                  className={`flex-1 ${
+                    a.status === 'error'
+                      ? 'text-fg/70'
+                      : a.status === 'idle'
+                      ? 'text-fg/40'
+                      : 'text-fg/90'
+                  }`}
+                >
+                  <Sparkline data={a.sparkline} height={24} />
                 </div>
                 <div className="flex shrink-0 items-end gap-6 font-mono text-[11px] uppercase tracking-[0.22em] text-fg-dim">
                   <div className="flex flex-col items-end gap-0.5">

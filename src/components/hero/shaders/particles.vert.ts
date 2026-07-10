@@ -50,10 +50,10 @@ void main() {
     zDepth
   );
 
-  // All groups lock in together — single slow morph (~3s), no per-attractor stagger.
-  // uProgress crawls 0→1 over ~3s on JS side; shader uses full window so morph eases.
-  float local = clamp(uProgress / 0.95, 0.0, 1.0);
-  float e = 1.0 - pow(1.0 - local, 2.6);
+  // All groups lock in together — single slow morph (~6s), no per-attractor stagger.
+  // uProgress crawls 0→1 over ~6s on JS side; shader uses full window so morph eases.
+  float local = clamp(uProgress / 0.92, 0.0, 1.0);
+  float e = 1.0 - pow(1.0 - local, 2.4);
 
   vec3 morphed = mix(home, orbit, e);
 

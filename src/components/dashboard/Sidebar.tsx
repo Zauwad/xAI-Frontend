@@ -1,28 +1,22 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { BrandMark } from '@/components/primitives/BrandMark';
 
 const NAV = [
-  { icon: '◐', label: 'Overview', active: false },
-  { icon: '◆', label: 'Datasets', active: false },
-  { icon: '◇', label: 'Models', active: false },
+  { icon: '◐', label: 'Overview' },
+  { icon: '◆', label: 'Datasets' },
+  { icon: '◇', label: 'Models' },
   { icon: '✦', label: 'Insights', active: true },
-  { icon: '◈', label: 'Automations', active: false },
-  { icon: '⊡', label: 'Settings', active: false },
+  { icon: '◈', label: 'Automations' },
+  { icon: '⊡', label: 'Settings' },
 ];
 
 export function Sidebar() {
   return (
     <aside className="hidden w-[240px] shrink-0 flex-col border-r border-border bg-bg-elev1 md:flex">
-      <div className="flex h-14 items-center gap-2 border-b border-border px-5">
-        <span className="grid h-6 w-6 place-items-center rounded-sm border border-border-hi bg-bg-elev2 text-[10px]">
-          ✕
-        </span>
-        <span className="font-mono text-sm">xai</span>
-        <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-fg-dim">
-          /workspace
-        </span>
+      <div className="flex h-14 items-center border-b border-border px-5">
+        <BrandMark size="sm" />
       </div>
 
       <div className="px-3 py-4">
@@ -31,7 +25,7 @@ export function Sidebar() {
         </div>
         <nav className="flex flex-col gap-0.5">
           {NAV.map((item) => (
-            <SidebarItem key={item.label} {...item} />
+            <SidebarItem key={item.label} icon={item.icon} label={item.label} active={!!item.active} />
           ))}
         </nav>
       </div>

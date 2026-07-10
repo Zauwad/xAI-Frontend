@@ -42,7 +42,8 @@ function Sep() {
 }
 
 const TOTAL_RECORDS = 18_429_501;
-const PROCESS_DURATION = 3000; // ms — slow morph, user feel data getting organized
+const PROCESS_DURATION = 6000; // ms — slow 6s morph, user feel data getting organized
+const CATEGORY_COUNT = 12;
 
 type ProcessPhase = 'idle' | 'running' | 'done';
 
@@ -91,13 +92,11 @@ export function Hero() {
   }, [triggered]);
 
   // Three parameters: records / categories discovered / index coverage %
-  // categories = always 12 once user activates (the 12 named clusters)
-  // index %    = climbs 0 → 100 over the morph window
-  const total = TOTAL_RECORDS;
-  const CATEGORY_COUNT = 12;
+  // categories = ticks 0 → 12 in lockstep with morph progress
+  // index %    = ticks 0 → 100 over the morph window
+  const categoriesDiscovered =
+    phase === 'idle' ? 0 : Math.min(CATEGORY_COUNT, Math.round(progress * CATEGORY_COUNT));
   const indexPct = phase === 'idle' ? 0 : Math.round(progress * 100);
-
-  const fmt = formatCount;
 
   return (
     <section
@@ -157,7 +156,7 @@ export function Hero() {
             <button
               onClick={() => setTriggered(true)}
               disabled={triggered}
-              className="group relative overflow-hidden rounded-sm border border-fg px-6 py-3 font-mono text-xs uppercase tracking-[0.22em] text-fg transition-opacity duration-500 disabled:cursor-default disabled:opacity-50 enabled:hover:opacity-90"
+              className="group relative overflow-hidden rounded-sm border border-fg px-6 py-3 font-mono text-xs uppercase tracking-[0.22em] text-fg transition-opacity duration-500 enabled:cursor-pointer disabled:cursor-default disabled:opacity-50 enabled:hover:opacity-90"
             >
               <span className="relative z-10 transition-colors duration-500 group-enabled:group-hover:text-bg-base">
                 {triggered ? 'Xai active' : 'Activate Xai →'}
@@ -181,14 +180,14 @@ export function Hero() {
             >
               <Stat
                 label="records"
-                value={fmt(total)}
+                value={formatCount(TOTAL_RECORDS)}
                 active
                 dot
               />
               <Sep />
               <Stat
                 label="categories"
-                value={phase === 'idle' ? '0' : String(CATEGORY_COUNT)}
+                value={String(categoriesDiscovered)}
               />
               <Sep />
               <Stat

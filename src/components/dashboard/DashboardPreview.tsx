@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Container } from '@/components/primitives/Container';
-import { Reveal } from '@/components/primitives/Reveal';
+import { SectionHeading } from '@/components/primitives/SectionHeading';
 import { KPIS } from '@/lib/mockData';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
@@ -52,20 +52,12 @@ export function DashboardPreview() {
     >
       <div className="grid-bg pointer-events-none absolute inset-0 opacity-30" />
       <Container size="wide" className="relative">
-        <div className="mb-20 flex flex-col gap-6 md:mb-24">
-          <Reveal delay={0.1}>
-            <h2 className="max-w-[760px] text-balance text-4xl font-medium leading-[1.05] tracking-[-0.03em] md:text-6xl">
-              The surface
-              <br />
-              <span className="text-fg-muted">where it lands.</span>
-            </h2>
-          </Reveal>
-          <Reveal delay={0.2}>
-            <p className="max-w-[520px] text-base leading-relaxed text-fg-muted">
-              A real workspace. Sidebar, KPIs, datasets, activity. Tabs swap,
-              numbers count up, hover states breathe.
-            </p>
-          </Reveal>
+        <div className="mb-20 md:mb-24">
+          <SectionHeading
+            title="The surface"
+            muted="where it lands."
+            body="A real workspace. Sidebar, KPIs, datasets, activity. Tabs swap, numbers count up, hover states breathe."
+          />
         </div>
 
         <motion.div

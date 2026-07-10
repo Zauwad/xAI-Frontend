@@ -1,9 +1,10 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import { Container } from '@/components/primitives/Container';
 import { Reveal } from '@/components/primitives/Reveal';
-import { MagneticButton } from '@/components/primitives/MagneticButton';
+import { PrimaryCTA } from '@/components/primitives/PrimaryCTA';
+import { BrandMark } from '@/components/primitives/BrandMark';
+import { StatusPulse } from '@/components/primitives/StatusPulse';
 
 const NAV = [
   { href: '#ask', label: 'Ask' },
@@ -21,34 +22,13 @@ export function Footer() {
           {/* Brand column */}
           <div className="md:col-span-5">
             <Reveal>
-              <a
-                href="#top"
-                className="inline-flex items-center gap-2 font-mono text-sm tracking-tight"
-              >
-                <span className="grid h-6 w-6 place-items-center rounded-sm border border-border-hi bg-bg-elev1 text-[10px]">
-                  ✕
-                </span>
-                <span className="text-fg">xai</span>
-                <span className="text-fg-dim">/workspace</span>
-              </a>
+              <BrandMark />
               <p className="mt-6 max-w-[360px] text-base leading-relaxed text-fg-muted">
                 From raw data to decisions. Xai ingests, structures, and surfaces
                 insight — automatically.
               </p>
-              <div className="mt-8 flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.22em] text-fg-dim">
-                <span className="relative grid h-1.5 w-1.5 place-items-center">
-                  <span className="absolute h-1.5 w-1.5 rounded-full bg-fg" />
-                  <motion.span
-                    className="absolute h-1.5 w-1.5 rounded-full bg-fg/60"
-                    animate={{ scale: [1, 2.6, 1], opacity: [0.6, 0, 0.6] }}
-                    transition={{
-                      duration: 1.8,
-                      repeat: Infinity,
-                      ease: 'easeOut',
-                    }}
-                  />
-                </span>
-                <span>all systems normal</span>
+              <div className="mt-8">
+                <StatusPulse label="all systems normal" className="text-fg-dim" />
               </div>
             </Reveal>
           </div>
@@ -90,15 +70,9 @@ export function Footer() {
                     question.
                   </p>
                 </div>
-                <MagneticButton
-                  href="#signature"
-                  className="group relative inline-flex w-fit overflow-hidden rounded-sm border border-fg px-6 py-3 font-mono text-xs uppercase tracking-[0.22em] text-fg"
-                >
-                  <span className="relative z-10 transition-colors duration-500 group-hover:text-bg-base">
-                    Open Xai →
-                  </span>
-                  <span className="absolute inset-0 translate-y-full bg-fg transition-transform duration-500 ease-out-quart group-hover:translate-y-0" />
-                </MagneticButton>
+                <PrimaryCTA href="#signature" className="text-fg">
+                  Open Xai →
+                </PrimaryCTA>
               </div>
             </Reveal>
           </div>

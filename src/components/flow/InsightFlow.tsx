@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 import { Container } from '@/components/primitives/Container';
-import { Reveal } from '@/components/primitives/Reveal';
+import { SectionHeading } from '@/components/primitives/SectionHeading';
 import { FlowStage } from './FlowConnector';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 
@@ -49,20 +49,12 @@ export function InsightFlow() {
     >
       <div className="grid-bg pointer-events-none absolute inset-0 opacity-40" />
       <Container size="wide" className="relative">
-        <div className="mb-20 flex flex-col gap-6 md:mb-28">
-          <Reveal delay={0.1}>
-            <h2 className="max-w-[760px] text-balance text-4xl font-medium leading-[1.05] tracking-[-0.03em] md:text-6xl">
-              Three steps.
-              <br />
-              <span className="text-fg-muted">One continuous flow.</span>
-            </h2>
-          </Reveal>
-          <Reveal delay={0.2}>
-            <p className="max-w-[520px] text-base leading-relaxed text-fg-muted">
-              Data enters messy. Xai structures it. Insight exits clear. No
-              pipelines to maintain.
-            </p>
-          </Reveal>
+        <div className="mb-20 md:mb-28">
+          <SectionHeading
+            title="Three steps."
+            muted="One continuous flow."
+            body="Data enters messy. Xai structures it. Insight exits clear. No pipelines to maintain."
+          />
         </div>
 
         {/* SVG connector above cards */}

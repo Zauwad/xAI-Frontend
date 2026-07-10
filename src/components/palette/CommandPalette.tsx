@@ -2,25 +2,25 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { setPaletteOpen, subscribePalette, togglePalette } from './store';
 
 type Action = {
   id: string;
   label: string;
   hint?: string;
   group: 'Navigate' | 'Insights' | 'Automations' | 'Demo' | 'Help';
-  shortcut?: string;
   run: () => void;
 };
 
-const FUZZY_SCORE = (q: string, s: string) => {
+function fuzzyScore(q: string, s: string): number {
   if (!q) return 1;
-  q = q.toLowerCase();
-  s = s.toLowerCase();
+  const ql = q.toLowerCase();
+  const sl = s.toLowerCase();
   let qi = 0;
   let score = 0;
   let streak = 0;
-  for (let i = 0; i < s.length && qi < q.length; i++) {
-    if (s[i] === q[qi]) {
+  for (let i = 0; i < sl.length && qi < ql.length; i++) {
+    if (sl[i] === ql[qi]) {
       qi++;
       streak++;
       score += 10 + streak * 4;
@@ -28,9 +28,56 @@ const FUZZY_SCORE = (q: string, s: string) => {
       streak = 0;
     }
   }
-  if (qi < q.length) return -1;
-  if (s.startsWith(q)) score += 50;
+  if (qi < ql.length) return -1;
+  if (sl.startsWith(ql)) score += 50;
   return score;
+}
+
+function navigateTo(id: string) {
+  setPaletteOpen(false);
+  setTimeout(() => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 50);
+}
+
+const ACTIONS: Action[] = [
+  { id: 'hero', label: 'Go to Hero', hint: 'From raw data to decisions', group: 'Navigate', run: () => navigateTo('hero') },
+  { id: 'flow', label: 'Go to Process', hint: 'How Xai works', group: 'Navigate', run: () => navigateTo('flow') },
+  { id: 'dashboard', label: 'Go to Product', hint: 'The dashboard surface', group: 'Navigate', run: () => navigateTo('dashboard') },
+  { id: 'signature', label: 'Go to Signature', hint: 'Cursor-reactive object', group: 'Navigate', run: () => navigateTo('signature') },
+  { id: 'top', label: 'Back to top', group: 'Navigate', run: () => navigateTo('top') },
+  { id: 'demo-cycle', label: 'Auto-cycle dashboard tabs', hint: 'Demo mode — runs every 6s', group: 'Demo', run: () => window.dispatchEvent(new CustomEvent('xai:demo-cycle')) },
+  { id: 'demo-stop', label: 'Stop demo', group: 'Demo', run: () => window.dispatchEvent(new CustomEvent('xai:demo-stop')) },
+  { id: 'demo-explode', label: 'Trigger signature explosion', hint: 'Shatter mesh into 12 shards', group: 'Demo', run: () => window.dispatchEvent(new CustomEvent('xai:explode')) },
+  { id: 'insight-anomaly', label: 'Insight: EU-west signup drop', hint: 'anomaly · model.detector', group: 'Insights', run: () => navigateTo('dashboard') },
+  { id: 'insight-expansion', label: 'Insight: Expansion candidates', hint: 'opportunity · $184k ARR', group: 'Insights', run: () => navigateTo('dashboard') },
+  { id: 'auto-revenue', label: 'Automation: Daily revenue digest', hint: 'cron 08:00 UTC → Slack', group: 'Automations', run: () => navigateTo('dashboard') },
+  { id: 'auto-churn', label: 'Automation: Churn risk escalation', hint: 'model.score > 0.78 → PagerDuty', group: 'Automations', run: () => navigateTo('dashboard') },
+  {
+    id: 'shortcuts',
+    label: 'Show keyboard shortcuts',
+    hint: '⌘K · G H · G P · G S · X to explode',
+    group: 'Help',
+    run: () => alert('⌘K — palette\nG then H — Hero\nG then P — Product\nG then S — Signature\nX — explode mesh'),
+  },
+  {
+    id: 'about',
+    label: 'About this prototype',
+    hint: 'stack + decisions',
+    group: 'Help',
+    run: () =>
+      alert(
+        'Xai prototype.\nNext 14 · R3F · GSAP · Framer.\nHand-rolled shaders, no chart libs, no UI kits.\nRead README.md for engineering notes.',
+      ),
+  },
+];
+
+const SHORTCUT_TARGETS: Record<string, string> = {
+  h: 'hero',
+  p: 'dashboard',
+  s: 'signature',
+  f: 'flow',
+  t: 'top',
 };
 
 export function CommandPalette() {
@@ -39,192 +86,81 @@ export function CommandPalette() {
   const [idx, setIdx] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const navigate = (id: string) => {
-    setOpen(false);
-    setQ('');
-    setTimeout(() => {
-      const el = document.getElementById(id);
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 50);
-  };
+  // Subscribe to the trigger button's open requests.
+  useEffect(() => {
+    const unsubscribe = subscribePalette(setOpen);
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
-  const actions: Action[] = useMemo(
-    () => [
-      {
-        id: 'hero',
-        label: 'Go to Hero',
-        hint: 'From raw data to decisions',
-        group: 'Navigate',
-        run: () => navigate('hero'),
-      },
-      {
-        id: 'flow',
-        label: 'Go to Process',
-        hint: 'How Xai works',
-        group: 'Navigate',
-        run: () => navigate('flow'),
-      },
-      {
-        id: 'dashboard',
-        label: 'Go to Product',
-        hint: 'The dashboard surface',
-        group: 'Navigate',
-        run: () => navigate('dashboard'),
-      },
-      {
-        id: 'signature',
-        label: 'Go to Signature',
-        hint: 'Cursor-reactive object',
-        group: 'Navigate',
-        run: () => navigate('signature'),
-      },
-      {
-        id: 'top',
-        label: 'Back to top',
-        group: 'Navigate',
-        run: () => navigate('top'),
-      },
-      {
-        id: 'demo-cycle',
-        label: 'Auto-cycle dashboard tabs',
-        hint: 'Demo mode — runs every 6s',
-        group: 'Demo',
-        run: () => window.dispatchEvent(new CustomEvent('xai:demo-cycle')),
-      },
-      {
-        id: 'demo-stop',
-        label: 'Stop demo',
-        group: 'Demo',
-        run: () => window.dispatchEvent(new CustomEvent('xai:demo-stop')),
-      },
-      {
-        id: 'demo-explode',
-        label: 'Trigger signature explosion',
-        hint: 'Shatter mesh into 12 shards',
-        group: 'Demo',
-        run: () => window.dispatchEvent(new CustomEvent('xai:explode')),
-      },
-      {
-        id: 'insight-anomaly',
-        label: 'Insight: EU-west signup drop',
-        hint: 'anomaly · model.detector',
-        group: 'Insights',
-        run: () => navigate('dashboard'),
-      },
-      {
-        id: 'insight-expansion',
-        label: 'Insight: Expansion candidates',
-        hint: 'opportunity · $184k ARR',
-        group: 'Insights',
-        run: () => navigate('dashboard'),
-      },
-      {
-        id: 'auto-revenue',
-        label: 'Automation: Daily revenue digest',
-        hint: 'cron 08:00 UTC → Slack',
-        group: 'Automations',
-        run: () => navigate('dashboard'),
-      },
-      {
-        id: 'auto-churn',
-        label: 'Automation: Churn risk escalation',
-        hint: 'model.score > 0.78 → PagerDuty',
-        group: 'Automations',
-        run: () => navigate('dashboard'),
-      },
-      {
-        id: 'shortcuts',
-        label: 'Show keyboard shortcuts',
-        hint: '⌘K · G H · G P · G S · X to explode',
-        group: 'Help',
-        run: () => alert('⌘K — palette\nG then H — Hero\nG then P — Product\nG then S — Signature\nX — explode mesh'),
-      },
-      {
-        id: 'about',
-        label: 'About this prototype',
-        hint: 'stack + decisions',
-        group: 'Help',
-        run: () =>
-          alert(
-            'Xai prototype.\nNext 14 · R3F · GSAP · Framer.\nHand-rolled shaders, no chart libs, no UI kits.\nRead README.md for engineering notes.',
-          ),
-      },
-    ],
-    [],
-  );
-
-  const filtered: Action[] = useMemo(() => {
-    if (!q.trim()) return actions.slice(0, 10);
-    const scored = actions
+  const filtered = useMemo(() => {
+    if (!q.trim()) return ACTIONS.slice(0, 10);
+    return ACTIONS
       .map((a) => ({
         a,
-        s: Math.max(FUZZY_SCORE(q, a.label), FUZZY_SCORE(q, a.hint ?? '')),
+        s: Math.max(fuzzyScore(q, a.label), fuzzyScore(q, a.hint ?? '')),
       }))
       .filter((x) => x.s > 0)
       .sort((x, y) => y.s - x.s)
-      .slice(0, 10);
-    return scored.map((x) => x.a);
-  }, [q, actions]);
+      .slice(0, 10)
+      .map((x) => x.a);
+  }, [q]);
 
-  // open with ⌘K / Ctrl-K / "/" when not in input
+  // Global keys: ⌘K toggles, / opens, X explodes, G+key navigates.
   useEffect(() => {
+    let gArmed = false;
     const onKey = (e: KeyboardEvent) => {
       const t = e.target as HTMLElement | null;
-      const inField = t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA');
-      if ((e.key === 'k' || e.key === 'K') && (e.metaKey || e.ctrlKey)) {
+      const inField = t?.tagName === 'INPUT' || t?.tagName === 'TEXTAREA';
+      const meta = e.metaKey || e.ctrlKey;
+
+      if (meta && (e.key === 'k' || e.key === 'K')) {
         e.preventDefault();
-        setOpen((o) => !o);
-        setQ('');
+        togglePalette();
+        if (!open) setQ('');
         return;
       }
-      if (e.key === '/' && !inField) {
-        e.preventDefault();
-        setOpen(true);
+      if (open && e.key === 'Escape') {
+        setOpen(false);
         setQ('');
         return;
-      }
-      // shortcuts
-      if (!inField && !open) {
-        if (e.key === 'x' || e.key === 'X') {
-          window.dispatchEvent(new CustomEvent('xai:explode'));
-        }
-        if (e.key === 'g' || e.key === 'G') {
-          const next = (ev: KeyboardEvent) => {
-            document.removeEventListener('keydown', next, true);
-            const key = ev.key.toLowerCase();
-            if (key === 'h') navigate('hero');
-            else if (key === 'p') navigate('dashboard');
-            else if (key === 's') navigate('signature');
-            else if (key === 'f') navigate('flow');
-            else if (key === 't') navigate('top');
-          };
-          document.addEventListener('keydown', next, true);
-        }
       }
       if (open) {
-        if (e.key === 'Escape') {
-          setOpen(false);
-          setQ('');
-        }
-        if (e.key === 'ArrowDown') {
-          e.preventDefault();
-          setIdx((i) => Math.min(filtered.length - 1, i + 1));
-        }
-        if (e.key === 'ArrowUp') {
-          e.preventDefault();
-          setIdx((i) => Math.max(0, i - 1));
-        }
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          filtered[idx]?.run();
-        }
+        if (e.key === 'ArrowDown') { e.preventDefault(); setIdx((i) => Math.min(filtered.length - 1, i + 1)); return; }
+        if (e.key === 'ArrowUp')   { e.preventDefault(); setIdx((i) => Math.max(0, i - 1)); return; }
+        if (e.key === 'Enter')     { e.preventDefault(); filtered[idx]?.run(); return; }
+      }
+      if (inField || open) return;
+
+      if (e.key === '/') {
+        e.preventDefault();
+        setPaletteOpen(true);
+        setQ('');
+        return;
+      }
+      if (e.key === 'x' || e.key === 'X') {
+        window.dispatchEvent(new CustomEvent('xai:explode'));
+        return;
+      }
+      if (e.key === 'g' || e.key === 'G') {
+        gArmed = true;
+        // ponytail: single-shot, decays after a short window — capture-phase next key decides target.
+        setTimeout(() => (gArmed = false), 800);
+        const next = (ev: KeyboardEvent) => {
+          document.removeEventListener('keydown', next, true);
+          gArmed = false;
+          const target = SHORTCUT_TARGETS[ev.key.toLowerCase()];
+          if (target) navigateTo(target);
+        };
+        document.addEventListener('keydown', next, true);
       }
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
   }, [open, filtered, idx]);
 
-  // focus input on open
+  // Focus input on open.
   useEffect(() => {
     if (open) {
       setIdx(0);
@@ -260,7 +196,6 @@ export function CommandPalette() {
             className="w-full max-w-[620px] overflow-hidden rounded-md border border-border-hi bg-bg-elev1 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* input */}
             <div className="flex items-center gap-3 border-b border-border px-4">
               <span className="font-mono text-xs uppercase tracking-[0.22em] text-fg-dim">
                 ⌘K
@@ -280,7 +215,6 @@ export function CommandPalette() {
               </span>
             </div>
 
-            {/* results */}
             <div className="max-h-[58vh] overflow-y-auto">
               {filtered.length === 0 && (
                 <div className="px-4 py-10 text-center font-mono text-xs uppercase tracking-[0.18em] text-fg-dim">
@@ -326,7 +260,6 @@ export function CommandPalette() {
               ))}
             </div>
 
-            {/* footer */}
             <div className="flex items-center justify-between border-t border-border bg-bg-elev2 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.22em] text-fg-dim">
               <div className="flex items-center gap-3">
                 <span>↑↓ navigate</span>
@@ -342,19 +275,10 @@ export function CommandPalette() {
   );
 }
 
-// Trigger button mounted in nav
 export function PaletteTrigger({ className = '' }: { className?: string }) {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
   return (
     <button
-      onClick={() => {
-        const ev = new KeyboardEvent('keydown', {
-          key: 'k',
-          metaKey: true,
-        });
-        document.dispatchEvent(ev);
-      }}
+      onClick={togglePalette}
       className={`flex items-center gap-2 rounded-sm border border-border bg-bg-elev2 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-fg-muted transition-colors duration-300 hover:border-border-hi hover:text-fg ${className}`}
     >
       <span>search</span>
