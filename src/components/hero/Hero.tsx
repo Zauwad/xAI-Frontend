@@ -36,72 +36,43 @@ export function Hero() {
         >
           <span className="grid h-1.5 w-1.5 place-items-center rounded-full bg-fg shadow-[0_0_12px_rgba(250,250,250,0.6)]" />
           <span>Intelligence Workspace</span>
-          <span className="text-fg-dim">/</span>
-          <span className="text-fg-dim">v0.1</span>
         </motion.div>
 
-        <div className="flex items-end justify-between gap-8">
-          <div className="max-w-[820px]">
-            <motion.h1
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.1, ease: heroEase, delay: 0.2 }}
-              className="text-balance text-[44px] font-medium leading-[1.02] tracking-[-0.04em] text-fg md:text-[72px] lg:text-[88px]"
-            >
-              From raw data
-              <br />
-              <span className="text-fg-muted">to decisions.</span>
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, ease: heroEase, delay: 0.5 }}
-              className="mt-6 max-w-[520px] text-balance text-base leading-relaxed text-fg-muted md:text-lg"
-            >
-              Xai ingests, structures, and surfaces insight — automatically.
-            </motion.p>
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1.4, delay: 0.9 }}
-            className="hidden flex-col items-end gap-1 font-mono text-[11px] uppercase tracking-[0.22em] text-fg-dim md:flex"
+        <div className="max-w-[820px]">
+          <motion.h1
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.1, ease: heroEase, delay: 0.2 }}
+            className="text-balance text-[44px] font-medium leading-[1.02] tracking-[-0.04em] text-fg md:text-[72px] lg:text-[88px]"
           >
-            <span>point count</span>
-            <span className="tabular text-fg-muted">1,500</span>
-            <span className="mt-3">attractors</span>
-            <span className="tabular text-fg-muted">12</span>
-            <span className="mt-3">stage</span>
-            <span className="tabular text-fg-muted">00 / 02</span>
-          </motion.div>
+            From raw data
+            <br />
+            <span className="text-fg-muted">to decisions.</span>
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, ease: heroEase, delay: 0.5 }}
+            className="mt-6 max-w-[520px] text-balance text-base leading-relaxed text-fg-muted md:text-lg"
+          >
+            Xai ingests, structures, and surfaces insight — automatically.
+          </motion.p>
         </div>
 
-        {/* Scroll cue */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 1.4 }}
-          className="flex items-center justify-between"
+          className="flex justify-center font-mono text-[11px] uppercase tracking-[0.22em] text-fg-dim"
         >
-          <div className="font-mono text-[11px] uppercase tracking-[0.22em] text-fg-dim">
-            scroll
-          </div>
           <motion.div
             animate={{ y: [0, 6, 0] }}
-            transition={{
-              duration: 1.8,
-              repeat: Infinity,
-              ease: 'easeInOut',
-            }}
-            className="flex flex-col items-center gap-1 font-mono text-[11px] uppercase tracking-[0.22em] text-fg-dim"
+            transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+            className="flex flex-col items-center gap-1"
           >
             <span>↓</span>
             <span>↓</span>
           </motion.div>
-          <div className="font-mono text-[11px] uppercase tracking-[0.22em] text-fg-dim">
-            01 — process
-          </div>
         </motion.div>
       </Container>
 

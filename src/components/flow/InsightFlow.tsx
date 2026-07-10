@@ -50,12 +50,6 @@ export function InsightFlow() {
       <div className="grid-bg pointer-events-none absolute inset-0 opacity-40" />
       <Container className="relative">
         <div className="mb-20 flex flex-col gap-6 md:mb-28">
-          <Reveal>
-            <div className="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.22em] text-fg-muted">
-              <span className="grid h-1.5 w-1.5 place-items-center rounded-full bg-fg" />
-              <span>02 — process</span>
-            </div>
-          </Reveal>
           <Reveal delay={0.1}>
             <h2 className="max-w-[760px] text-balance text-4xl font-medium leading-[1.05] tracking-[-0.03em] md:text-6xl">
               Three steps.

@@ -71,13 +71,6 @@ export function SignatureSection() {
       <ParallaxLayers />
 
       <Container className="relative z-10 flex flex-col items-center gap-16 text-center">
-        <Reveal>
-          <div className="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.22em] text-fg-muted">
-            <span className="grid h-1.5 w-1.5 place-items-center rounded-full bg-fg" />
-            <span>04 — signature</span>
-          </div>
-        </Reveal>
-
         {/* canvas */}
         <motion.div
           initial={{ opacity: 0 }}
