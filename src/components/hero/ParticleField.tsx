@@ -1,22 +1,20 @@
 'use client';
 
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { useEffect, useMemo, useRef } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { ATTRACTORS, generatePoints, mulberry32 } from '@/lib/random';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
-import { usePageScroll } from '@/hooks/useScrollProgress';
 import vert from './shaders/particles.vert';
 import frag from './shaders/particles.frag';
+import { CategoryOverlay } from './CategoryOverlay';
 
 function Particles({
   count,
   progressRef,
-  pointerRef,
 }: {
   count: number;
   progressRef: React.MutableRefObject<number>;
-  pointerRef: React.MutableRefObject<{ x: number; y: number }>;
 }) {
   const matRef = useRef<THREE.ShaderMaterial>(null!);
 
@@ -52,7 +50,6 @@ function Particles({
     () => ({
       uTime: { value: 0 },
       uProgress: { value: 0 },
-      uPointer: { value: new THREE.Vector2(0, 0) },
     }),
     [],
   );
@@ -60,11 +57,9 @@ function Particles({
   useFrame((state) => {
     uniforms.uTime.value = state.clock.elapsedTime;
     const target = progressRef.current;
-    uniforms.uProgress.value += (target - uniforms.uProgress.value) * 0.06;
-    const tx = pointerRef.current.x;
-    const ty = pointerRef.current.y;
-    uniforms.uPointer.value.x += (tx - uniforms.uPointer.value.x) * 0.05;
-    uniforms.uPointer.value.y += (ty - uniforms.uPointer.value.y) * 0.05;
+    // Slow lerp — slider crawls 0→1 over ~3s so user feel data getting organized
+    // (0.011 ≈ reaches ~0.95 at t=3s, full settle ~3.4s)
+    uniforms.uProgress.value += (target - uniforms.uProgress.value) * 0.011;
   });
 
   return (
@@ -144,30 +139,20 @@ function AttractorLines({
 }
 
 function Rig() {
-  const { camera } = useThree();
-  useFrame((state) => {
-    const t = state.clock.elapsedTime;
-    camera.position.z = 6.5 + Math.sin(t * 0.15) * 0.05;
-    camera.lookAt(0, 0, 0);
-  });
+  // Camera locked at fixed position so category labels stay anchored to their attractors.
+  // (Earlier breathing made screen-space labels drift relative to particles.)
   return null;
 }
 
-export function ParticleField() {
+export function ParticleField({
+  triggered = false,
+}: {
+  triggered?: boolean;
+}) {
   const reduced = useReducedMotion();
-  const scroll = usePageScroll();
   const progressRef = useRef(0);
-  progressRef.current = Math.min(scroll / 0.3, 1);
-
-  const pointerRef = useRef({ x: 0, y: 0 });
-  useEffect(() => {
-    const onMove = (e: PointerEvent) => {
-      pointerRef.current.x = (e.clientX / window.innerWidth) * 2 - 1;
-      pointerRef.current.y = -((e.clientY / window.innerHeight) * 2 - 1);
-    };
-    window.addEventListener('pointermove', onMove, { passive: true });
-    return () => window.removeEventListener('pointermove', onMove);
-  }, []);
+  // triggered wins — once activated, fully converged regardless of scroll
+  progressRef.current = triggered ? 1 : 0;
 
   const count = reduced ? 500 : 1000;
 
@@ -183,12 +168,9 @@ export function ParticleField() {
       style={{ background: 'transparent', pointerEvents: 'none' }}
     >
       <Rig />
-      <Particles
-        count={count}
-        progressRef={progressRef}
-        pointerRef={pointerRef}
-      />
+      <Particles count={count} progressRef={progressRef} />
       <AttractorLines progressRef={progressRef} />
+      <CategoryOverlay visible={triggered} />
     </Canvas>
   );
 }

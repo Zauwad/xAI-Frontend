@@ -1,11 +1,11 @@
-// Vertex shader: morph from chaotic cloud to 12 attractor constellation
+// Vertex shader: morph from chaotic cloud → 12 attractor constellation.
+// After activation, each particle orbits its attractor at a stable radius.
 const vert = /* glsl */ `
 attribute float aAttractor;
 attribute float aSeed;
 
 uniform float uProgress;
 uniform float uTime;
-uniform vec2 uPointer;
 
 varying float vAlpha;
 varying float vSeed;
@@ -33,15 +33,31 @@ float hash11(float p) {
 
 void main() {
   vec3 home = position;
-  vec3 target = attractorPos(int(aAttractor));
-  float jitter = (hash11(aSeed) - 0.5) * 0.32;
-  target += vec3(jitter, jitter * 1.3, jitter * 0.7);
+  vec3 attractor = attractorPos(int(aAttractor));
 
-  float t = uProgress;
-  float e = 1.0 - pow(1.0 - t, 4.0);
+  // Orbital target: each particle lands on its own orbit around the attractor.
+  // Radius derived from seed (varies 0.07..0.13); angle also seeded but advances with time
+  // so each particle continuously circles its node.
+  float baseAngle = aSeed * 6.2831853;
+  float orbitSpeed = 0.18 + (hash11(aSeed * 3.17) - 0.5) * 0.12;
+  float angle = baseAngle + uTime * orbitSpeed;
+  float radius = 0.10 + (hash11(aSeed * 7.31) - 0.5) * 0.03;
+  float zDepth = sin(angle * 1.7 + aSeed * 5.0) * radius * 0.35;
 
-  vec3 morphed = mix(home, target, e);
+  vec3 orbit = attractor + vec3(
+    cos(angle) * radius,
+    sin(angle) * radius * 0.85,
+    zDepth
+  );
 
+  // All groups lock in together — single slow morph (~3s), no per-attractor stagger.
+  // uProgress crawls 0→1 over ~3s on JS side; shader uses full window so morph eases.
+  float local = clamp(uProgress / 0.95, 0.0, 1.0);
+  float e = 1.0 - pow(1.0 - local, 2.6);
+
+  vec3 morphed = mix(home, orbit, e);
+
+  // Chaotic drift when scattered (large when e=0, gone when converged)
   float drift = (1.0 - e) * 0.06;
   morphed += vec3(
     sin(uTime * 0.6 + aSeed * 6.28),
@@ -49,21 +65,19 @@ void main() {
     sin(uTime * 0.7 + aSeed * 3.14)
   ) * drift;
 
-  float wobble = e * 0.03;
+  // Subtle individual wobble persists even when orbiting, so dots don't feel glued
+  float wobble = 0.012 + e * 0.008;
   morphed += vec3(
-    sin(uTime * 1.2 + aSeed * 9.0),
-    cos(uTime * 1.0 + aSeed * 7.0),
+    sin(uTime * 1.4 + aSeed * 9.0),
+    cos(uTime * 1.1 + aSeed * 7.0),
     sin(uTime * 0.9 + aSeed * 5.0)
   ) * wobble;
-
-  vec3 cam = vec3(uPointer * (0.15 + e * 0.05), 0.0);
-  morphed -= cam;
 
   vec4 mv = modelViewMatrix * vec4(morphed, 1.0);
   gl_Position = projectionMatrix * mv;
 
-  // Small points — half previous size. Converged points barely grow.
-  float size = mix(1.6, 2.2, e);
+  // Smaller points when scattered, slightly larger (but still small) when orbiting
+  float size = mix(1.4, 1.6, e);
   gl_PointSize = size * (60.0 / -mv.z);
 
   vAlpha = mix(0.7, 1.0, e);
