@@ -27,7 +27,7 @@ export function Hero() {
       <div className="vignette pointer-events-none absolute inset-0" />
 
       {/* Content */}
-      <Container className="relative z-10 flex h-full flex-col justify-between py-24 md:py-28">
+      <Container size="wide" className="relative z-10 flex h-full flex-col justify-between py-24 md:py-28">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
