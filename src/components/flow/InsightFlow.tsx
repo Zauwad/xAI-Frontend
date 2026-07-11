@@ -45,7 +45,7 @@ export function InsightFlow() {
     <section
       id="flow"
       ref={sectionRef}
-      className="relative w-full border-t border-border py-32 md:py-48"
+      className="relative w-full border-t border-border py-16 md:py-24"
     >
       <div className="grid-bg pointer-events-none absolute inset-0 opacity-40" />
       <Container size="wide" className="relative">

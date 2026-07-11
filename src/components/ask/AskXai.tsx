@@ -135,7 +135,7 @@ export function AskXai() {
     <section
       id="ask"
       ref={inViewRef}
-      className="relative w-full border-t border-border py-32 md:py-48"
+      className="relative w-full border-t border-border py-16 md:py-24"
     >
       <div className="grid-bg pointer-events-none absolute inset-0 opacity-30" />
       <Container size="wide" className="relative">

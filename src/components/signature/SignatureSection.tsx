@@ -16,7 +16,7 @@ export function SignatureSection() {
   return (
     <section
       id="signature"
-      className="relative w-full overflow-hidden border-t border-border py-32 md:py-48"
+      className="relative w-full overflow-hidden border-t border-border py-16 md:py-24"
     >
       <ParallaxLayers />
 

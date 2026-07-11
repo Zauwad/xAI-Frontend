@@ -81,7 +81,7 @@ export function Automations() {
   return (
     <section
       id="automations"
-      className="relative w-full border-t border-border py-32 md:py-48"
+      className="relative w-full border-t border-border py-16 md:py-24"
     >
       <Container size="wide">
         <div className="mb-16 flex flex-col items-start justify-between gap-6 md:mb-20 md:flex-row md:items-end">
